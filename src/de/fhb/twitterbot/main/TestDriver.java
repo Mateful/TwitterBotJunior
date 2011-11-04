@@ -32,7 +32,7 @@ public class TestDriver {
 			System.out.println("Direct message successfully sent to "
 					+ message.getRecipientScreenName());
 			
-			// CHANGED
+			// CHANGED again
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
