@@ -31,6 +31,8 @@ public class TestDriver {
 					"test message from mateful to kwoxer");
 			System.out.println("Direct message successfully sent to "
 					+ message.getRecipientScreenName());
+			
+			// CHANGED
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
