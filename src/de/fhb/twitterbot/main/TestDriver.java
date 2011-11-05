@@ -14,7 +14,6 @@ package de.fhb.twitterbot.main;
 
 public class TestDriver {
 	public static void main(String[] args) {
-		TwitterController controller = new TwitterController();
-		new TwitterView(controller);
+		new TwitterController();
 	}
 }
