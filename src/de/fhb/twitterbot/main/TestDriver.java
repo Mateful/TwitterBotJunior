@@ -1,10 +1,6 @@
 package de.fhb.twitterbot.main;
 
-import twitter4j.DirectMessage;
-import twitter4j.Status;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
 
 /*
  * app website: https://dev.twitter.com/apps/1364050/show
@@ -20,6 +16,7 @@ import twitter4j.TwitterFactory;
 public class TestDriver {
 
 	public static void main(String[] args) {
+		// new commentar
 		TwitterBot bot = new TwitterBot();
 		try {
 			while (true) {
