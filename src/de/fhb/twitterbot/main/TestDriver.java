@@ -1,6 +1,5 @@
 package de.fhb.twitterbot.main;
 
-import twitter4j.TwitterException;
 
 /*
  * app website: https://dev.twitter.com/apps/1364050/show
@@ -14,19 +13,8 @@ import twitter4j.TwitterException;
  */
 
 public class TestDriver {
-
 	public static void main(String[] args) {
-		// new commentar
-		TwitterBot bot = new TwitterBot();
-		try {
-			while (true) {
-				Thread.sleep(10000);
-				bot.printMentions();
-			}
-		} catch (TwitterException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		TwitterController controller = new TwitterController();
+		new TwitterView(controller);
 	}
 }
