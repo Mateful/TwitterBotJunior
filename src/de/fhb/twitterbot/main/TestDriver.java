@@ -1,6 +1,5 @@
 package de.fhb.twitterbot.main;
 
-
 /*
  * app website: https://dev.twitter.com/apps/1364050/show
  * 

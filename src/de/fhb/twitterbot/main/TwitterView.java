@@ -28,7 +28,7 @@ public class TwitterView implements Runnable {
 
 	@Override
 	public void run() {
-		while (running) {
+		while(running) {
 			printMenu();
 			processInput(getInput());
 		}
@@ -39,11 +39,11 @@ public class TwitterView implements Runnable {
 
 		try {
 			commandNumber = Integer.parseInt(input);
-		} catch (NumberFormatException e) {
+		} catch(NumberFormatException e) {
 			commandNumber = -1;
 		}
 
-		switch (commandNumber) {
+		switch(commandNumber) {
 		case 0:
 			controller.receiveCommand(new ExitCommand());
 			break;
@@ -69,7 +69,7 @@ public class TwitterView implements Runnable {
 
 		try {
 			input = inputReader.readLine();
-		} catch (IOException e) {
+		} catch(IOException e) {
 			e.printStackTrace();
 		}
 
@@ -88,7 +88,7 @@ public class TwitterView implements Runnable {
 
 		System.out.println("Your Choice: ");
 	}
-	
+
 	public void printErrorMessage(String message) {
 		System.out.println(message);
 	}

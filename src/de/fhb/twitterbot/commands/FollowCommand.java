@@ -1,11 +1,11 @@
 package de.fhb.twitterbot.commands;
 
 import twitter4j.TwitterException;
-import de.fhb.twitterbot.main.TwitterBot;
+import de.fhb.twitterbot.ai.TwitterBot;
 
 public class FollowCommand extends Command {
 	private String followerName;
-	
+
 	public FollowCommand(String followerName) {
 		this.followerName = followerName;
 	}
