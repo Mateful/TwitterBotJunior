@@ -3,21 +3,24 @@ package de.fhb.twitterbot.main;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Observable;
+import java.util.Observer;
 
 import de.fhb.twitterbot.commands.ExitCommand;
 import de.fhb.twitterbot.commands.FollowCommand;
 import de.fhb.twitterbot.commands.ToggleAnsweringCommand;
 import de.fhb.twitterbot.commands.UpdateStatusCommand;
 
-public class TwitterView implements Runnable {
-	private TwitterController controller;
+public class TwitterView implements Runnable, Observer {
+	private TwitterBot twitterbot;
 	private Thread thread;
 	private BufferedReader inputReader;
 	private boolean running;
 
-	public TwitterView(TwitterController controller) {
-		this.controller = controller;
+	public TwitterView(TwitterBot controller) {
+		this.twitterbot = controller;
 		inputReader = new BufferedReader(new InputStreamReader(System.in));
+		twitterbot.addObserver(this);
 	}
 
 	public void start() {
@@ -45,18 +48,18 @@ public class TwitterView implements Runnable {
 
 		switch(commandNumber) {
 		case 0:
-			controller.receiveCommand(new ExitCommand());
+			twitterbot.receiveCommand(new ExitCommand());
 			break;
 		case 1:
 			System.out.println("Enter name: ");
-			controller.receiveCommand(new FollowCommand(getInput()));
+			twitterbot.receiveCommand(new FollowCommand(getInput()));
 			break;
 		case 2:
-			controller.receiveCommand(new ToggleAnsweringCommand());
+			twitterbot.receiveCommand(new ToggleAnsweringCommand());
 			break;
 		case 3:
 			System.out.println("Enter your new status: ");
-			controller.receiveCommand(new UpdateStatusCommand(getInput()));
+			twitterbot.receiveCommand(new UpdateStatusCommand(getInput()));
 			break;
 		default:
 			System.out.println("Unknown Command");
@@ -70,7 +73,7 @@ public class TwitterView implements Runnable {
 		try {
 			input = inputReader.readLine();
 		} catch(IOException e) {
-			e.printStackTrace();
+			printErrorMessage(e.getMessage());
 		}
 
 		return input;
@@ -84,12 +87,24 @@ public class TwitterView implements Runnable {
 				+ " <0> to close TwitterBotJunior\n";
 		System.out.print(menu);
 		System.out.print("Automatic answering of mentions is "
-				+ (controller.isAnswering() ? "enabled" : "disabled") + '\n');
+				+ (twitterbot.isAnswering() ? "enabled" : "disabled") + '\n');
 
 		System.out.println("Your Choice: ");
 	}
 
+	private void printMessage(String string) {
+		System.out.println(string);
+	}
+	
 	public void printErrorMessage(String message) {
 		System.out.println(message);
+	}
+	
+	@Override
+	public void update(Observable observable, Object argument) {
+		if (argument instanceof Exception)
+			printErrorMessage(((Exception)argument).getMessage());
+		else if (argument instanceof String)
+			printMessage((String)argument);
 	}
 }
