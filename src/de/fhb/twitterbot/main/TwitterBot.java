@@ -1,9 +1,7 @@
 package de.fhb.twitterbot.main;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Random;
@@ -18,8 +16,8 @@ import twitter4j.UserStreamAdapter;
 import de.fhb.twitterbot.commands.Command;
 
 public class TwitterBot extends Observable {
-	public final String LAST_ANSWERED_ID_FILE = "lastAnswered.txt";
 	public final String ANSWER_FILE = "answers.txt";
+	public final String STANDARD_ANSWER = "42";
 
 	private Twitter twitter;
 	private TwitterStream twitterStream;
@@ -36,29 +34,32 @@ public class TwitterBot extends Observable {
 		twitter = t;
 		twitterStream = s;
 
-		answering = false;
+		answering = true;
 		answers = new ArrayList<String>();
 		readAnswers(ANSWER_FILE);
+		addListener();
+		twitterStream.user();
+	}
 
+	private void addListener() {
 		twitterStream.addListener(new UserStreamAdapter() {
 			@Override
 			public void onStatus(Status s) {
 				try {
 					onIncomingStatus(s);
-					
-					if(s.getText().contains("@" + twitter.getScreenName()))
+
+					if (s.getText().contains("@" + twitter.getScreenName()))
 						onMention(s);
-				} catch(Exception e) {
+				} catch (Exception e) {
 					notifyObservers(e);
 				}
 			}
 		});
-
-		twitterStream.user();
 	}
 
 	private void onIncomingStatus(Status s) {
-		notifyObservers(s.getUser().getScreenName() + " sent: " + s.getText());
+		notifyObservers(s.getUser().getScreenName() + "'s status update: "
+				+ s.getText());
 	}
 
 	private void readAnswers(String filename) {
@@ -67,15 +68,16 @@ public class TwitterBot extends Observable {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			do {
 				input = br.readLine();
-				if(input != null) {
-					// System.out.println(input);
+				if (input != null) {
 					answers.add(input);
 				}
-			} while(input != null);
+			} while (input != null);
 
 			br.close();
-		} catch(FileNotFoundException e) {} catch(IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.err.println(e.getMessage() + "\nAnswer set to: "
+					+ STANDARD_ANSWER);
+			answers.add(STANDARD_ANSWER);
 		}
 	}
 
@@ -83,26 +85,27 @@ public class TwitterBot extends Observable {
 		String newStatusMessage;
 		Random random = new Random();
 
-		try {
-			newStatusMessage = "@" + s.getUser().getScreenName() + " "
-					+ answers.get(random.nextInt(answers.size()));
-			updateStatus(newStatusMessage);
-			notifyObservers("generated answer: " + newStatusMessage);
-		} catch(TwitterException e) {
-			notifyObservers(e);
-		}
+		newStatusMessage = "@" + s.getUser().getScreenName() + " "
+				+ answers.get(random.nextInt(answers.size()));
+		notifyObservers("generated answer: " + newStatusMessage);
+		updateStatus(newStatusMessage);
 	}
-	
+
 	public void receiveCommand(Command command) {
 		try {
 			command.execute(this);
-		} catch(TwitterException e) {
-			e.printStackTrace();
+		} catch (TwitterException e) {
+			notifyObservers(e);
 		}
 	}
 
-	public Status updateStatus(String status) throws TwitterException {
-		return twitter.updateStatus(status);
+	public void updateStatus(String status) {
+		try {
+			twitter.updateStatus(status);
+		} catch (TwitterException e) {
+			if (!isDuplcateStatusUpdateError(e))
+				notifyObservers(e);
+		}
 	}
 
 	public void createFriendship(String name) throws TwitterException {
@@ -110,11 +113,11 @@ public class TwitterBot extends Observable {
 	}
 
 	private void onMention(Status s) {
-		if(answering) {
+		if (answering) {
 			answerMention(s);
 		}
 	}
-	
+
 	public void setAnswering(boolean b) {
 		answering = b;
 	}
@@ -123,11 +126,15 @@ public class TwitterBot extends Observable {
 		return answering;
 	}
 
+	private boolean isDuplcateStatusUpdateError(TwitterException e) {
+		return e.getStatusCode() == 403;
+	}
+
 	private void notifyObservers(Exception e) {
 		setChanged();
 		super.notifyObservers(e);
 	}
-	
+
 	private void notifyObservers(String s) {
 		setChanged();
 		super.notifyObservers(s);

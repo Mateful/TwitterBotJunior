@@ -88,8 +88,6 @@ public class TwitterView implements Runnable, Observer {
 		System.out.print(menu);
 		System.out.print("Automatic answering of mentions is "
 				+ (twitterbot.isAnswering() ? "enabled" : "disabled") + '\n');
-
-		System.out.println("Your Choice: ");
 	}
 
 	private void printMessage(String string) {
