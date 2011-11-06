@@ -1,14 +1,18 @@
-Projekt TwitterBot
-===================
-Autoren: Benjamin Hoffmann, Marco Knietzsch
+== Projekt TwitterBot ==
 
-Kurzbeschreibung
-------------------
+=== Autoren === 
+* Benjamin Hoffmann
+* Marco Knietzsch
+
+== Kurzbeschreibung ==
+
 Der TwitterBot antwortet automatisch auf Tweets und zeigt eingehende Tweets an. 
 Mögliche Antworten stehen in der Datei "answers.txt" (pro Zeile eine Antwort, es wird eine zufällige Antwort ausgesucht).
 
 
-Starten
---------------
+== Start ==
+
 Starten mit Konsole:
 	"java -jar TwitterBotJunior.jar"
+
+
