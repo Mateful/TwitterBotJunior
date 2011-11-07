@@ -1,6 +1,10 @@
 Projekt TwitterBotJunior
 ========================
 
+Version
+-------
+* Version 1.0
+
 Autoren
 ------- 
 * Benjamin Hoffmann
@@ -9,19 +13,20 @@ Autoren
 Kurzbeschreibung
 ----------------
 
-Der TwitterBot antwortet automatisch auf Tweets und zeigt eingehende Tweets an. Moegliche Antworten stehen in der Datei "answers.txt" (pro Zeile eine Antwort, es wird eine zufaellige Antwort ausgesucht).
+Der TwitterBot antwortet automatisch auf Tweets und zeigt eingehende Tweets an. Moegliche Antworten stehen in der Datei "answers.txt" (pro Zeile eine Antwort, es wird eine zufaellige Antwort ausgesucht). Zusätzlich zur Antwort wird ein zufälliger Smiley (aus "smileys.txt") ausgewählt und der Nachricht angefuegt.
 
 Start
 -----
 
-Benoetigte Files in einem Ordner:
-	-TwitterBotJunior.jar
-	-MatefulBot
-	-answers.txt
-	-smileys.txt
-	-twitter4j.properties
+Benoetigte Dateien in einem Ordner:
+	* TwitterBotJunior.jar
+	* MatefulBot
+	* answers.txt
+	* smileys.txt
+	* twitter4j.properties
+
 Starten mit Konsole:
-	"java -jar TwitterBotJunior.jar"
+	* "java -jar TwitterBotJunior.jar"
 
 Verbinde TwitterBotJunior mit deinem Twitteraccount
 ---------------------------------------------------
