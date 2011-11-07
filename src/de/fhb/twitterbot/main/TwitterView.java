@@ -21,6 +21,39 @@ public class TwitterView implements Runnable, Observer {
 		this.twitterbot = controller;
 		inputReader = new BufferedReader(new InputStreamReader(System.in));
 		twitterbot.addObserver(this);
+		requestAuthentification();
+	}
+
+	private void requestAuthentification() {
+		boolean loggedIn = false;
+		while(!loggedIn) {
+			System.out
+					.println("Enter your Twitter username you want to use the bot with. Leave blank for logging in with MatefulBot.");
+			String input = getInput();
+			if(input.equals("")) {
+				twitterbot.loadDefaultAccessToken();
+				loggedIn = true;
+			} else {
+				try {
+					twitterbot.loadAccessToken(input);
+					loggedIn = true;
+				} catch(RuntimeException e) {
+					printErrorMessage(e.getMessage());
+					System.out.println("Create new token? (y/n):");
+					if(getInput().equals("y")) {
+						twitterbot.startAuthentification();
+						System.out
+								.println("Open the following URL and grant access to your account:");
+						System.out
+								.println(twitterbot.getAuthentificationLink());
+						System.out.print("Enter the PIN:");
+						twitterbot.getAccessToken(getInput());
+						twitterbot.saveAccessToken();
+						loggedIn = true;
+					}
+				}
+			}
+		}
 	}
 
 	public void start() {
@@ -80,7 +113,9 @@ public class TwitterView implements Runnable, Observer {
 	}
 
 	private void printMenu() {
-		final String menu = "TwitterBotJunior by Marco and Benjamin\n" + "\n"
+		final String menu = "TwitterBotJunior by Marco and Benjamin\n"
+				+ "---------------------------------------" + "\n"
+				+ "Logged in as: " + twitterbot.getUserName() + "\n"
 				+ "Press\n" + " <1> to follow another twitter user\n"
 				+ " <2> to toggle automatic answering of mentions\n"
 				+ " <3> to update your status manually\n"

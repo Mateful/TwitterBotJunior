@@ -1,7 +1,9 @@
 package de.fhb.twitterbot.main;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Random;
@@ -13,7 +15,10 @@ import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.UserStreamAdapter;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 import de.fhb.twitterbot.commands.Command;
+import de.fhb.twitterbot.util.Serializer;
 
 public class TwitterBot extends Observable {
 	private final String ANSWER_FILE = "answers.txt";
@@ -21,7 +26,8 @@ public class TwitterBot extends Observable {
 
 	private Twitter twitter;
 	private TwitterStream twitterStream;
-
+	private RequestToken requestToken;
+	private AccessToken accessToken;
 	private boolean answering;
 	private ArrayList<String> answers;
 
@@ -37,8 +43,67 @@ public class TwitterBot extends Observable {
 		answering = true;
 		answers = new ArrayList<String>();
 		readAnswers(ANSWER_FILE);
+
+		// userAuth();
+
 		addListener();
+	}
+
+	private void startStream() throws FileNotFoundException, IOException, ClassNotFoundException {
+		AccessToken accessToken = (AccessToken)Serializer.load("shiroto0");
+		twitter.setOAuthAccessToken(accessToken);
+		twitterStream.setOAuthAccessToken(accessToken);
 		twitterStream.user();
+	}
+
+	public void startAuthentification() {
+		try {
+			requestToken = twitter.getOAuthRequestToken();
+		} catch(TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public String getAuthentificationLink() {
+		return requestToken.getAuthorizationURL();
+	}
+
+	public void getAccessToken(String pin) {
+		try {
+			if(pin.length() > 0)
+				accessToken = twitter.getOAuthAccessToken(requestToken, pin);
+			else
+				accessToken = twitter.getOAuthAccessToken();
+		} catch(TwitterException e) {
+			notifyObservers(e);
+		}
+	}
+
+	public void loadDefaultAccessToken() {
+		loadAccessToken("MatefulBot");
+	}
+
+	public void loadAccessToken(String token) throws RuntimeException {
+		try {
+			accessToken = (AccessToken)Serializer.load(token);
+		} catch(FileNotFoundException e) {
+			throw new RuntimeException(token + " token not found.");
+		} catch(IOException e) {
+			notifyObservers(e);
+		} catch(ClassNotFoundException e) {
+			notifyObservers(e);
+		}
+	}
+
+	public void saveAccessToken() {
+		try {
+			Serializer.save(accessToken, accessToken.getScreenName());
+		} catch(FileNotFoundException e) {
+			notifyObservers(e);
+		} catch(IOException e) {
+			notifyObservers(e);
+		}
 	}
 
 	private void addListener() {
@@ -48,9 +113,9 @@ public class TwitterBot extends Observable {
 				try {
 					onIncomingStatus(s);
 
-					if (s.getText().contains("@" + twitter.getScreenName()))
+					if(s.getText().contains("@" + twitter.getScreenName()))
 						onMention(s);
-				} catch (Exception e) {
+				} catch(Exception e) {
 					notifyObservers(e);
 				}
 			}
@@ -68,13 +133,13 @@ public class TwitterBot extends Observable {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			do {
 				input = br.readLine();
-				if (input != null) {
+				if(input != null) {
 					answers.add(input);
 				}
-			} while (input != null);
+			} while(input != null);
 
 			br.close();
-		} catch (Exception e) {
+		} catch(Exception e) {
 			System.err.println(e.getMessage() + "\nAnswer set to: "
 					+ STANDARD_ANSWER);
 			answers.add(STANDARD_ANSWER);
@@ -94,7 +159,7 @@ public class TwitterBot extends Observable {
 	public void receiveCommand(Command command) {
 		try {
 			command.execute(this);
-		} catch (TwitterException e) {
+		} catch(TwitterException e) {
 			notifyObservers(e);
 		}
 	}
@@ -102,8 +167,8 @@ public class TwitterBot extends Observable {
 	public void updateStatus(String status) {
 		try {
 			twitter.updateStatus(status);
-		} catch (TwitterException e) {
-			if (!isDuplcateStatusUpdateError(e))
+		} catch(TwitterException e) {
+			if(!isDuplcateStatusUpdateError(e))
 				notifyObservers(e);
 		}
 	}
@@ -113,9 +178,13 @@ public class TwitterBot extends Observable {
 	}
 
 	private void onMention(Status s) {
-		if (answering) {
+		if(answering) {
 			answerMention(s);
 		}
+	}
+
+	public String getUserName() {
+		return accessToken.getScreenName();
 	}
 
 	public void setAnswering(boolean b) {
