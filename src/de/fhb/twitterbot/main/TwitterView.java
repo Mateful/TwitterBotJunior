@@ -54,6 +54,7 @@ public class TwitterView implements Runnable, Observer {
 				}
 			}
 		}
+		twitterbot.startStream();
 	}
 
 	public void start() {

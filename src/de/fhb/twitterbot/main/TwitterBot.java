@@ -43,14 +43,10 @@ public class TwitterBot extends Observable {
 		answering = true;
 		answers = new ArrayList<String>();
 		readAnswers(ANSWER_FILE);
-
-		// userAuth();
-
 		addListener();
 	}
 
-	private void startStream() throws FileNotFoundException, IOException, ClassNotFoundException {
-		AccessToken accessToken = (AccessToken)Serializer.load("shiroto0");
+	public void startStream() {
 		twitter.setOAuthAccessToken(accessToken);
 		twitterStream.setOAuthAccessToken(accessToken);
 		twitterStream.user();
