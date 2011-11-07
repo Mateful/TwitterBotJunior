@@ -55,6 +55,7 @@ public class TwitterBot extends Observable {
 		} catch(IOException e) {
 			System.err.println(e.getMessage() + "\nSmiley set to: "
 					+ STANDARD_SMILEY);
+			smileys = new ArrayList<String>();
 			smileys.add(STANDARD_SMILEY);
 		}
 	}
@@ -65,6 +66,7 @@ public class TwitterBot extends Observable {
 		} catch(IOException e) {
 			System.err.println(e.getMessage() + "\nAnswer set to: "
 					+ STANDARD_ANSWER);
+			answers = new ArrayList<String>();
 			answers.add(STANDARD_ANSWER);
 		}
 	}
@@ -129,14 +131,17 @@ public class TwitterBot extends Observable {
 	}
 
 	private void answerMention(Status s) {
-		String newStatusMessage;
-		Random random = new Random();
-
-		newStatusMessage = "@" + s.getUser().getScreenName() + " "
-				+ answers.get(random.nextInt(answers.size())) + " "
-						+ smileys.get(random.nextInt(smileys.size()));
+		String newStatusMessage = generateStatusResponse(s);
 		notifyObservers("generated answer: " + newStatusMessage);
 		updateStatus(newStatusMessage);
+	}
+
+	private String generateStatusResponse(Status s) {
+		Random random = new Random();
+
+		return "@" + s.getUser().getScreenName() + " "
+				+ answers.get(random.nextInt(answers.size())) + " "
+						+ smileys.get(random.nextInt(smileys.size()));
 	}
 
 	public void receiveCommand(Command command) {
