@@ -38,15 +38,7 @@ public class TwitterView implements Runnable, Observer {
 	}
 
 	private void processInput(String input) {
-		int commandNumber;
-
-		try {
-			commandNumber = Integer.parseInt(input);
-		} catch(NumberFormatException e) {
-			commandNumber = -1;
-		}
-
-		switch(commandNumber) {
+		switch(getCommandNumber(input)) {
 		case 0:
 			twitterbot.receiveCommand(new ExitCommand());
 			break;
@@ -67,15 +59,23 @@ public class TwitterView implements Runnable, Observer {
 		}
 	}
 
+	private int getCommandNumber(String input) {
+		int commandNumber;
+		try {
+			commandNumber = Integer.parseInt(input);
+		} catch(NumberFormatException e) {
+			commandNumber = -1;
+		}
+		return commandNumber;
+	}
+
 	private String getInput() {
 		String input = "";
-
 		try {
 			input = inputReader.readLine();
 		} catch(IOException e) {
 			printErrorMessage(e.getMessage());
 		}
-
 		return input;
 	}
 
@@ -93,16 +93,16 @@ public class TwitterView implements Runnable, Observer {
 	private void printMessage(String string) {
 		System.out.println(string);
 	}
-	
-	public void printErrorMessage(String message) {
+
+	private void printErrorMessage(String message) {
 		System.out.println(message);
 	}
-	
+
 	@Override
 	public void update(Observable observable, Object argument) {
-		if (argument instanceof Exception)
+		if(argument instanceof Exception)
 			printErrorMessage(((Exception)argument).getMessage());
-		else if (argument instanceof String)
+		else if(argument instanceof String)
 			printMessage((String)argument);
 	}
 }

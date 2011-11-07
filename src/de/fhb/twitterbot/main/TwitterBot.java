@@ -16,8 +16,8 @@ import twitter4j.UserStreamAdapter;
 import de.fhb.twitterbot.commands.Command;
 
 public class TwitterBot extends Observable {
-	public final String ANSWER_FILE = "answers.txt";
-	public final String STANDARD_ANSWER = "42";
+	private final String ANSWER_FILE = "answers.txt";
+	private final String STANDARD_ANSWER = "42";
 
 	private Twitter twitter;
 	private TwitterStream twitterStream;
