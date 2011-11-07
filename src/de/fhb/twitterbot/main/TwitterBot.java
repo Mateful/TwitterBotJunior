@@ -21,6 +21,7 @@ import de.fhb.twitterbot.util.Serializer;
 import de.fhb.twitterbot.util.TextFileReader;
 
 public class TwitterBot extends Observable {
+	public final String STANDARD_ACCOUNT = "MatefulBot";
 	private final String ANSWER_FILE = "answers.txt";
 	private final String STANDARD_ANSWER = "42";
 
@@ -143,7 +144,7 @@ public class TwitterBot extends Observable {
 
 	public void loadDefaultAccessToken() {
 		try {
-			loadAccessToken("MatefulBot");
+			loadAccessToken(STANDARD_ACCOUNT);
 		} catch(TokenNotFoundException e) {
 			notifyObservers(e);
 		}

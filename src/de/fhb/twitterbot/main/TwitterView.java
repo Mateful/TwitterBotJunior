@@ -33,8 +33,8 @@ public class TwitterView implements Runnable, Observer {
 				twitterbot.loadAccessToken(name);
 				loggedIn = true;
 			} catch(TokenNotFoundException e) {
-				printErrorMessage(name + " token was not found.");
-				System.out.println("Create new token? (y/n):");
+				printMessage(name + " token was not found.");
+				printMessage("Create new token? (y/n): ");
 				if(getInput().equals("y")) {
 					createToken();
 					loggedIn = true;
@@ -45,20 +45,18 @@ public class TwitterView implements Runnable, Observer {
 	}
 
 	private String chooseAccount() {
-		System.out
-				.println("Enter your Twitter username you want to use the bot with. Leave blank for logging in with MatefulBot.");
+		printMessage("Enter your Twitter username you want to use the bot with. Leave blank for logging in with " + twitterbot.STANDARD_ACCOUNT + ".");
 		String input = getInput();
 		if(input.equals(""))
-			input = "MatefulBot";
+			input = twitterbot.STANDARD_ACCOUNT;
 		return input;
 	}
 
 	private void createToken() {
 		twitterbot.startAuthentification();
-		System.out
-				.println("Open the following URL and grant access to your account:");
-		System.out.println(twitterbot.getAuthentificationLink());
-		System.out.print("Enter the PIN:");
+		printMessage("Open the following URL and grant access to your account:");
+		printMessage(twitterbot.getAuthentificationLink());
+		printMessage("Enter the PIN: ");
 		twitterbot.getAccessTokenFromTwitter(getInput());
 		twitterbot.saveAccessToken();
 	}
@@ -88,18 +86,18 @@ public class TwitterView implements Runnable, Observer {
 			twitterbot.receiveCommand(new ExitCommand());
 			break;
 		case 1:
-			System.out.println("Enter name: ");
+			printMessage("Enter name: ");
 			twitterbot.receiveCommand(new FollowCommand(getInput()));
 			break;
 		case 2:
 			twitterbot.receiveCommand(new ToggleAnsweringCommand());
 			break;
 		case 3:
-			System.out.println("Enter your new status: ");
+			printMessage("Enter your new status: ");
 			twitterbot.receiveCommand(new UpdateStatusCommand(getInput()));
 			break;
 		default:
-			System.err.println("Unknown Command");
+			printErrorMessage("Unknown Command");
 			break;
 		}
 	}
@@ -131,10 +129,10 @@ public class TwitterView implements Runnable, Observer {
 				+ "Press\n" + " <1> to follow another twitter user\n"
 				+ " <2> to toggle automatic answering of mentions\n"
 				+ " <3> to update your status manually\n"
-				+ " <0> to close TwitterBotJunior\n";
-		System.out.print(menu);
-		System.out.print("Automatic answering of mentions is "
-				+ (twitterbot.isAnswering() ? "enabled" : "disabled") + '\n');
+				+ " <0> to close TwitterBotJunior";
+		printMessage(menu);
+		printMessage("Automatic answering of mentions is "
+				+ (twitterbot.isAnswering() ? "enabled" : "disabled"));
 	}
 
 	private void printMessage(String message) {
