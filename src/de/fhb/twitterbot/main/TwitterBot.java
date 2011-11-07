@@ -1,8 +1,6 @@
 package de.fhb.twitterbot.main;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -20,6 +18,7 @@ import twitter4j.auth.RequestToken;
 import de.fhb.twitterbot.Exceptions.TokenNotFoundException;
 import de.fhb.twitterbot.commands.Command;
 import de.fhb.twitterbot.util.Serializer;
+import de.fhb.twitterbot.util.TextFileReader;
 
 public class TwitterBot extends Observable {
 	private final String ANSWER_FILE = "answers.txt";
@@ -42,11 +41,36 @@ public class TwitterBot extends Observable {
 		twitterStream = s;
 
 		answering = true;
-		answers = new ArrayList<String>();
-		readAnswers(ANSWER_FILE);
+		readAnswersFile();
 		addListener();
 	}
-	
+
+	private void readAnswersFile() {
+		try {
+			answers = TextFileReader.readTextFileLineByLine(ANSWER_FILE);
+		} catch(IOException e) {
+			System.err.println(e.getMessage() + "\nAnswer set to: "
+					+ STANDARD_ANSWER);
+			answers.add(STANDARD_ANSWER);
+		}
+	}
+
+	private void addListener() {
+		twitterStream.addListener(new UserStreamAdapter() {
+			@Override
+			public void onStatus(Status s) {
+				try {
+					onIncomingStatus(s);
+
+					if(s.getText().contains("@" + twitter.getScreenName()))
+						onMention(s);
+				} catch(Exception e) {
+					notifyObservers(e);
+				}
+			}
+		});
+	}
+
 	public void startAuthentification() {
 		try {
 			requestToken = twitter.getOAuthRequestToken();
@@ -76,44 +100,9 @@ public class TwitterBot extends Observable {
 		twitterStream.user();
 	}
 
-	private void addListener() {
-		twitterStream.addListener(new UserStreamAdapter() {
-			@Override
-			public void onStatus(Status s) {
-				try {
-					onIncomingStatus(s);
-
-					if(s.getText().contains("@" + twitter.getScreenName()))
-						onMention(s);
-				} catch(Exception e) {
-					notifyObservers(e);
-				}
-			}
-		});
-	}
-
 	private void onIncomingStatus(Status s) {
 		notifyObservers(s.getUser().getScreenName() + "'s status update: "
 				+ s.getText());
-	}
-
-	private void readAnswers(String filename) {
-		try {
-			String input;
-			BufferedReader br = new BufferedReader(new FileReader(filename));
-			do {
-				input = br.readLine();
-				if(input != null) {
-					answers.add(input);
-				}
-			} while(input != null);
-
-			br.close();
-		} catch(Exception e) {
-			System.err.println(e.getMessage() + "\nAnswer set to: "
-					+ STANDARD_ANSWER);
-			answers.add(STANDARD_ANSWER);
-		}
 	}
 
 	private void answerMention(Status s) {
@@ -168,7 +157,8 @@ public class TwitterBot extends Observable {
 		} catch(IOException e) {
 			notifyObservers(e);
 		} catch(ClassNotFoundException e) {
-			notifyObservers(new Exception("AccessToken class was not found, the library is probably corrupted."));
+			notifyObservers(new Exception(
+					"AccessToken class was not found, the library is probably corrupted."));
 		}
 	}
 
@@ -179,7 +169,7 @@ public class TwitterBot extends Observable {
 			notifyObservers(e);
 		}
 	}
-	
+
 	public String getUserName() {
 		return accessToken.getScreenName();
 	}

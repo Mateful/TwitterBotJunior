@@ -74,6 +74,11 @@ public class TwitterView implements Runnable, Observer {
 		while(running) {
 			printMenu();
 			processInput(getInput());
+			try {
+				Thread.sleep(100);
+			} catch(InterruptedException e) {
+				printErrorMessage(e.getMessage());
+			}
 		}
 	}
 
@@ -94,7 +99,7 @@ public class TwitterView implements Runnable, Observer {
 			twitterbot.receiveCommand(new UpdateStatusCommand(getInput()));
 			break;
 		default:
-			System.out.println("Unknown Command");
+			System.err.println("Unknown Command");
 			break;
 		}
 	}
@@ -132,12 +137,12 @@ public class TwitterView implements Runnable, Observer {
 				+ (twitterbot.isAnswering() ? "enabled" : "disabled") + '\n');
 	}
 
-	private void printMessage(String string) {
-		System.out.println(string);
+	private void printMessage(String message) {
+		System.out.println(message);
 	}
 
-	private void printErrorMessage(String message) {
-		System.out.println(message);
+	private void printErrorMessage(String errorMessage) {
+		System.err.println(errorMessage);
 	}
 
 	@Override
