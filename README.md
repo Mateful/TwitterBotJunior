@@ -9,12 +9,12 @@ Autoren
 Kurzbeschreibung
 ----------------
 
-Der TwitterBot antwortet automatisch auf Tweets und zeigt eingehende Tweets an. M�gliche Antworten stehen in der Datei "answers.txt" (pro Zeile eine Antwort, es wird eine zufaellige Antwort ausgesucht).
+Der TwitterBot antwortet automatisch auf Tweets und zeigt eingehende Tweets an. Moegliche Antworten stehen in der Datei "answers.txt" (pro Zeile eine Antwort, es wird eine zufaellige Antwort ausgesucht).
 
 Start
 -----
 
-Ben�tigte Files in einem Ordner:
+Benoetigte Files in einem Ordner:
 	-TwitterBotJunior.jar
 	-MatefulBot
 	-answers.txt
