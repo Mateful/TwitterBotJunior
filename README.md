@@ -19,6 +19,7 @@ Start
 -----
 
 Benoetigte Dateien in einem Ordner:
+-----------------------------------
 * TwitterBotJunior.jar
 * MatefulBot
 * answers.txt
@@ -26,6 +27,7 @@ Benoetigte Dateien in einem Ordner:
 * twitter4j.properties
 
 Starten mit Konsole:
+--------------------
 * "java -jar TwitterBotJunior.jar"
 
 Verbinde TwitterBotJunior mit deinem Twitteraccount
