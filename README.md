@@ -14,6 +14,11 @@ Der TwitterBot antwortet automatisch auf Tweets und zeigt eingehende Tweets an. 
 Start
 -----
 
+Benötigte Files in einem Ordner:
+	-TwitterBotJunior.jar
+	-MatefulBot
+	-answers.txt
+	-twitter4j.properties
 Starten mit Konsole:
 	"java -jar TwitterBotJunior.jar"
 
