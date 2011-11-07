@@ -18,6 +18,7 @@ Benoetigte Files in einem Ordner:
 	-TwitterBotJunior.jar
 	-MatefulBot
 	-answers.txt
+	-smileys.txt
 	-twitter4j.properties
 Starten mit Konsole:
 	"java -jar TwitterBotJunior.jar"

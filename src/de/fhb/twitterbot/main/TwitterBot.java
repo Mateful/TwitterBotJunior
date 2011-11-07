@@ -23,14 +23,16 @@ import de.fhb.twitterbot.util.TextFileReader;
 public class TwitterBot extends Observable {
 	public final String STANDARD_ACCOUNT = "MatefulBot";
 	private final String ANSWER_FILE = "answers.txt";
+	private final String SMILEY_FILE = "smileys.txt";
 	private final String STANDARD_ANSWER = "42";
+	private final String STANDARD_SMILEY = "(^^;)";
 
 	private Twitter twitter;
 	private TwitterStream twitterStream;
 	private RequestToken requestToken;
 	private AccessToken accessToken;
 	private boolean answering;
-	private ArrayList<String> answers;
+	private ArrayList<String> answers, smileys;
 
 	public TwitterBot() {
 		this(new TwitterFactory().getInstance(), new TwitterStreamFactory()
@@ -43,7 +45,18 @@ public class TwitterBot extends Observable {
 
 		answering = true;
 		readAnswersFile();
+		readSmileyFile();
 		addListener();
+	}
+
+	private void readSmileyFile() {
+		try {
+			smileys = TextFileReader.readTextFileLineByLine(SMILEY_FILE);
+		} catch(IOException e) {
+			System.err.println(e.getMessage() + "\nSmiley set to: "
+					+ STANDARD_SMILEY);
+			smileys.add(STANDARD_SMILEY);
+		}
 	}
 
 	private void readAnswersFile() {
@@ -120,7 +133,8 @@ public class TwitterBot extends Observable {
 		Random random = new Random();
 
 		newStatusMessage = "@" + s.getUser().getScreenName() + " "
-				+ answers.get(random.nextInt(answers.size()));
+				+ answers.get(random.nextInt(answers.size())) + " "
+						+ smileys.get(random.nextInt(smileys.size()));
 		notifyObservers("generated answer: " + newStatusMessage);
 		updateStatus(newStatusMessage);
 	}
@@ -137,7 +151,7 @@ public class TwitterBot extends Observable {
 		try {
 			twitter.updateStatus(status);
 		} catch(TwitterException e) {
-			if(!isDuplcateStatusUpdateError(e))
+			if(!isDuplicateStatusUpdateError(e))
 				notifyObservers(e);
 		}
 	}
@@ -187,7 +201,7 @@ public class TwitterBot extends Observable {
 		return answering;
 	}
 
-	private boolean isDuplcateStatusUpdateError(TwitterException e) {
+	private boolean isDuplicateStatusUpdateError(TwitterException e) {
 		return e.getStatusCode() == 403;
 	}
 
