@@ -106,6 +106,15 @@ public class TwitterBot extends Observable {
 				+ s.getText());
 	}
 
+	private void onMention(Status s) {
+		if(answering && !hasOwnUsername(s))
+			answerMention(s);
+	}
+
+	private boolean hasOwnUsername(Status s) {
+		return s.getUser().getScreenName().equals(getUserName());
+	}
+
 	private void answerMention(Status s) {
 		String newStatusMessage;
 		Random random = new Random();
@@ -135,11 +144,6 @@ public class TwitterBot extends Observable {
 
 	public void createFriendship(String name) throws TwitterException {
 		twitter.createFriendship(name);
-	}
-
-	private void onMention(Status s) {
-		if(answering)
-			answerMention(s);
 	}
 
 	public void loadDefaultAccessToken() {
