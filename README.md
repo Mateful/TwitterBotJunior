@@ -13,7 +13,7 @@ Autoren
 Kurzbeschreibung
 ----------------
 
-Der TwitterBot antwortet automatisch auf Tweets und zeigt eingehende Tweets an. Moegliche Antworten stehen in der Datei "answers.txt" (pro Zeile eine Antwort, es wird eine zufaellige Antwort ausgesucht). Zusätzlich zur Antwort wird ein zufälliger Smiley (aus "smileys.txt") ausgewählt und der Nachricht angefuegt.
+Der TwitterBot antwortet automatisch auf Tweets und zeigt eingehende Tweets an. Moegliche Antworten stehen in der Datei "answers.txt" (pro Zeile eine Antwort, es wird eine zufaellige Antwort ausgesucht). Zusaetzlich zur Antwort wird ein zufaelliger Smiley (aus "smileys.txt") ausgewaehlt und der Nachricht angefuegt.
 
 Start
 -----
