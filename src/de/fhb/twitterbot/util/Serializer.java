@@ -9,12 +9,12 @@ import java.io.ObjectOutputStream;
 
 public class Serializer {
 	public static void save(Object o, String name)
-			throws FileNotFoundException, IOException {
+			throws IOException {
 		save(o, name, "");
 	}
 
 	public static void save(Object o, String name, String folder)
-			throws FileNotFoundException, IOException {
+			throws IOException {
 		ObjectOutputStream outStream;
 		outStream = new ObjectOutputStream(new FileOutputStream(folder + name));
 		outStream.writeObject(o);

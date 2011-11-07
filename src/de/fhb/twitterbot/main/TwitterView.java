@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.Observable;
 import java.util.Observer;
 
+import de.fhb.twitterbot.Exceptions.TokenNotFoundException;
 import de.fhb.twitterbot.commands.ExitCommand;
 import de.fhb.twitterbot.commands.FollowCommand;
 import de.fhb.twitterbot.commands.ToggleAnsweringCommand;
@@ -21,40 +22,45 @@ public class TwitterView implements Runnable, Observer {
 		this.twitterbot = controller;
 		inputReader = new BufferedReader(new InputStreamReader(System.in));
 		twitterbot.addObserver(this);
-		requestAuthentification();
+		login();
 	}
 
-	private void requestAuthentification() {
+	private void login() {
 		boolean loggedIn = false;
 		while(!loggedIn) {
-			System.out
-					.println("Enter your Twitter username you want to use the bot with. Leave blank for logging in with MatefulBot.");
-			String input = getInput();
-			if(input.equals("")) {
-				twitterbot.loadDefaultAccessToken();
+			String name = chooseAccount();
+			try {
+				twitterbot.loadAccessToken(name);
 				loggedIn = true;
-			} else {
-				try {
-					twitterbot.loadAccessToken(input);
+			} catch(TokenNotFoundException e) {
+				printErrorMessage(name + " token was not found.");
+				System.out.println("Create new token? (y/n):");
+				if(getInput().equals("y")) {
+					createToken();
 					loggedIn = true;
-				} catch(RuntimeException e) {
-					printErrorMessage(e.getMessage());
-					System.out.println("Create new token? (y/n):");
-					if(getInput().equals("y")) {
-						twitterbot.startAuthentification();
-						System.out
-								.println("Open the following URL and grant access to your account:");
-						System.out
-								.println(twitterbot.getAuthentificationLink());
-						System.out.print("Enter the PIN:");
-						twitterbot.getAccessToken(getInput());
-						twitterbot.saveAccessToken();
-						loggedIn = true;
-					}
 				}
 			}
 		}
 		twitterbot.startStream();
+	}
+
+	private String chooseAccount() {
+		System.out
+				.println("Enter your Twitter username you want to use the bot with. Leave blank for logging in with MatefulBot.");
+		String input = getInput();
+		if(input.equals(""))
+			input = "MatefulBot";
+		return input;
+	}
+
+	private void createToken() {
+		twitterbot.startAuthentification();
+		System.out
+				.println("Open the following URL and grant access to your account:");
+		System.out.println(twitterbot.getAuthentificationLink());
+		System.out.print("Enter the PIN:");
+		twitterbot.getAccessTokenFromTwitter(getInput());
+		twitterbot.saveAccessToken();
 	}
 
 	public void start() {

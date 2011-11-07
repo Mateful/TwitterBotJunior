@@ -17,6 +17,7 @@ import twitter4j.TwitterStreamFactory;
 import twitter4j.UserStreamAdapter;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import de.fhb.twitterbot.Exceptions.TokenNotFoundException;
 import de.fhb.twitterbot.commands.Command;
 import de.fhb.twitterbot.util.Serializer;
 
@@ -45,19 +46,12 @@ public class TwitterBot extends Observable {
 		readAnswers(ANSWER_FILE);
 		addListener();
 	}
-
-	public void startStream() {
-		twitter.setOAuthAccessToken(accessToken);
-		twitterStream.setOAuthAccessToken(accessToken);
-		twitterStream.user();
-	}
-
+	
 	public void startAuthentification() {
 		try {
 			requestToken = twitter.getOAuthRequestToken();
 		} catch(TwitterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			notifyObservers(e);
 		}
 	}
 
@@ -65,7 +59,7 @@ public class TwitterBot extends Observable {
 		return requestToken.getAuthorizationURL();
 	}
 
-	public void getAccessToken(String pin) {
+	public void getAccessTokenFromTwitter(String pin) {
 		try {
 			if(pin.length() > 0)
 				accessToken = twitter.getOAuthAccessToken(requestToken, pin);
@@ -76,30 +70,10 @@ public class TwitterBot extends Observable {
 		}
 	}
 
-	public void loadDefaultAccessToken() {
-		loadAccessToken("MatefulBot");
-	}
-
-	public void loadAccessToken(String token) throws RuntimeException {
-		try {
-			accessToken = (AccessToken)Serializer.load(token);
-		} catch(FileNotFoundException e) {
-			throw new RuntimeException(token + " token not found.");
-		} catch(IOException e) {
-			notifyObservers(e);
-		} catch(ClassNotFoundException e) {
-			notifyObservers(e);
-		}
-	}
-
-	public void saveAccessToken() {
-		try {
-			Serializer.save(accessToken, accessToken.getScreenName());
-		} catch(FileNotFoundException e) {
-			notifyObservers(e);
-		} catch(IOException e) {
-			notifyObservers(e);
-		}
+	public void startStream() {
+		twitter.setOAuthAccessToken(accessToken);
+		twitterStream.setOAuthAccessToken(accessToken);
+		twitterStream.user();
 	}
 
 	private void addListener() {
@@ -174,11 +148,38 @@ public class TwitterBot extends Observable {
 	}
 
 	private void onMention(Status s) {
-		if(answering) {
+		if(answering)
 			answerMention(s);
+	}
+
+	public void loadDefaultAccessToken() {
+		try {
+			loadAccessToken("MatefulBot");
+		} catch(TokenNotFoundException e) {
+			notifyObservers(e);
 		}
 	}
 
+	public void loadAccessToken(String token) throws TokenNotFoundException {
+		try {
+			accessToken = (AccessToken)Serializer.load(token);
+		} catch(FileNotFoundException e) {
+			throw new TokenNotFoundException(token + " token not found.");
+		} catch(IOException e) {
+			notifyObservers(e);
+		} catch(ClassNotFoundException e) {
+			notifyObservers(new Exception("AccessToken class was not found, the library is probably corrupted."));
+		}
+	}
+
+	public void saveAccessToken() {
+		try {
+			Serializer.save(accessToken, accessToken.getScreenName());
+		} catch(IOException e) {
+			notifyObservers(e);
+		}
+	}
+	
 	public String getUserName() {
 		return accessToken.getScreenName();
 	}
