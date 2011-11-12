@@ -131,15 +131,17 @@ public class TwitterBot extends Observable {
 	}
 
 	private void answerMention(Status s) {
-		String newStatusMessage = generateStatusResponse(s);
+		String newStatusMessage = generateStatusResponse(s.getUser().getScreenName());
 		notifyObservers("generated answer: " + newStatusMessage);
 		updateStatus(newStatusMessage);
 	}
 
-	private String generateStatusResponse(Status s) {
+	public String generateStatusResponse(String name) {
+		if(name.equals(""))
+			throw new RuntimeException("Missing Name.");
 		Random random = new Random();
 
-		return "@" + s.getUser().getScreenName() + " "
+		return "@" + name + " "
 				+ answers.get(random.nextInt(answers.size())) + " "
 						+ smileys.get(random.nextInt(smileys.size()));
 	}
