@@ -1,10 +1,11 @@
 package de.fhb.twitterbot.test;
 
 import static org.junit.Assert.fail;
+import org.junit.Test;
 
-public class Test {
+public class TestTwitterBot {
 
-	@org.junit.Test
+	@Test
 	public void test() {
 //		fail("Not yet implemented");
 	}
